@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <title>Create Outlook Event</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 500px;
+      margin: 40px auto;
+      padding: 20px;
+      border: 1px solid #ccc;
+      border-radius: 10px;
+    }
+    label { display: block; margin-top: 15px; }
+    input { width: 100%; padding: 8px; margin-top: 5px; }
+    button {
+      margin-top: 20px;
+      padding: 10px;
+      width: 100%;
+      background-color: #0078D4;
+      color: white;
+      border: none;
+      border-radius: 5px;
+      font-size: 16px;
+      cursor: pointer;
+    }
+    button:hover { background-color: #005A9E; }
+  </style>
+</head>
+<body>
+
+  <h2>Create an Outlook Calendar Event</h2>
+
+  <label>Event Title</label>
+  <input type="text" id="title">
+
+  <label>Date</label>
+  <input type="date" id="date">
+
+  <label>Start Time</label>
+  <input type="time" id="start">
+
+  <label>End Time</label>
+  <input type="time" id="end">
+
+  <button onclick="generateICS()">Add to Outlook Calendar</button>
+
+  <script>
+    function generateICS() {
+      const title = document.getElementById("title").value;
+      const date = document.getElementById("date").value;
+      const start = document.getElementById("start").value;
+      const end = document.getElementById("end").value;
+
+      if (!title || !date || !start || !end) {
+        alert("Please fill out all fields");
+        return;
+      }
+
+      // Convert to ICS datetime format: YYYYMMDDTHHMMSS
+      const startDate = date.replace(/-/g, "") + "T" + start.replace(":", "") + "00";
+      const endDate = date.replace(/-/g, "") + "T" + end.replace(":", "") + "00";
+
+      const icsContent =
+`BEGIN:VCALENDAR
+VERSION:2.0
+BEGIN:VEVENT
+SUMMARY:${title}
+DTSTART:${startDate}
+DTEND:${endDate}
+END:VEVENT
+END:VCALENDAR`;
+
+      const blob = new Blob([icsContent], { type: "text/calendar" });
+      const url = URL.createObjectURL(blob);
+
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `${title}.ics`;
+      a.click();
+    }
+  </script>
+
+</body>
+</html>
