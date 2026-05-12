@@ -44,6 +44,9 @@
   <label>End Time</label>
   <input type="time" id="end">
 
+  <label>Description (optional)</label>
+<textarea id="description" rows="4" style="width:100%;"></textarea>
+
   <button onclick="generateICS()">Add to Outlook Calendar</button>
 
   <script>
@@ -52,6 +55,7 @@
       const date = document.getElementById("date").value;
       const start = document.getElementById("start").value;
       const end = document.getElementById("end").value;
+      const description = document.getElementById("description").value;
 
       if (!title || !date || !start || !end) {
         alert("Please fill out all fields");
@@ -62,14 +66,21 @@
       const startDate = date.replace(/-/g, "") + "T" + start.replace(":", "") + "00";
       const endDate = date.replace(/-/g, "") + "T" + end.replace(":", "") + "00";
 
-      const icsContent =
+      let icsContent =
 `BEGIN:VCALENDAR
 VERSION:2.0
 BEGIN:VEVENT
 SUMMARY:${title}
 DTSTART:${startDate}
 DTEND:${endDate}
-END:VEVENT
+`;
+
+if (description.trim() !== "") {
+  icsContent += `DESCRIPTION:${description.replace(/\n/g, "\\n")}\n`;
+}
+
+icsContent +=
+`END:VEVENT
 END:VCALENDAR`;
 
       const blob = new Blob([icsContent], { type: "text/calendar" });
